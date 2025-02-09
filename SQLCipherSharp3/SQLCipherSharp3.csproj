@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>SQLCipherSharp3</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>SQLCipherSharp3.x</Title>
+        <Description>SQLCipherSharp3 is a comprehensive .NET library that provides SQLCipher 3.x–compatible encryption and decryption for SQLite databases.</Description>
+    </PropertyGroup>
+
+</Project>

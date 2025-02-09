@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCipherSharp3", "SQLCipherSharp3\SQLCipherSharp3.csproj", "{BE7FC901-7CED-4F12-9E18-A2455E1911A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCipherSharp3.Tests", "SQLCipherSharp3.Tests\SQLCipherSharp3.Tests.csproj", "{AF053C99-294A-41BB-918D-8D2C77137976}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE7FC901-7CED-4F12-9E18-A2455E1911A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE7FC901-7CED-4F12-9E18-A2455E1911A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE7FC901-7CED-4F12-9E18-A2455E1911A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE7FC901-7CED-4F12-9E18-A2455E1911A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF053C99-294A-41BB-918D-8D2C77137976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF053C99-294A-41BB-918D-8D2C77137976}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF053C99-294A-41BB-918D-8D2C77137976}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF053C99-294A-41BB-918D-8D2C77137976}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
