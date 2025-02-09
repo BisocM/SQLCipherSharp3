@@ -8,6 +8,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>SQLCipherSharp3.x</Title>
         <Description>SQLCipherSharp3 is a comprehensive .NET library that provides SQLCipher 3.x–compatible encryption and decryption for SQLite databases.</Description>
+        <RepositoryUrl>https://github.com/BisocM/SQLCipherSharp3</RepositoryUrl>
     </PropertyGroup>
 
 </Project>
