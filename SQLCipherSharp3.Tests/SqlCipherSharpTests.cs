@@ -1,11 +1,7 @@
 ﻿#region
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -13,7 +9,7 @@ using Assert = Xunit.Assert;
 
 namespace SQLCipherSharp3.Tests
 {
-    public class SQLCipherSharpTests
+    public class SqlCipherSharpTests
     {
         //Assume sample files are in the same folder as the test assembly.
         private readonly string _testDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
