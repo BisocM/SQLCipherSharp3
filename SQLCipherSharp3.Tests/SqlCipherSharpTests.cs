@@ -12,12 +12,15 @@ namespace SQLCipherSharp3.Tests
     public class SqlCipherSharpTests
     {
         //Assume sample files are in the same folder as the test assembly.
-        private readonly string _testDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private readonly string _testDirectory =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            ?? throw new InvalidOperationException("Unable to locate test directory.");
         private string SampleEncDatabasePath => Path.Combine(_testDirectory, "sample_enc.db");
         private string SampleDatabasePath => Path.Combine(_testDirectory, "sample.db");
 
         private const string SamplePassword = "SAMPLE_PWD";
-        private readonly SqlCipherDecryptor _decryptor = new(); //Uses the default configuration
+        private readonly SqlCipherDecryptor _decryptor = new();
+        private readonly SqlCipherEncryptor _encryptor = new();
 
         [Fact]
         public void Decrypt_Synchronous_ValidPassword_ReturnsExpectedDatabase()
@@ -62,6 +65,27 @@ namespace SQLCipherSharp3.Tests
         }
 
         [Fact]
+        public void Decrypt_Synchronous_EmptyPassword_ThrowsArgumentException()
+        {
+            byte[] encryptedData = File.ReadAllBytes(SampleEncDatabasePath);
+            Assert.Throws<ArgumentException>(() => _decryptor.Decrypt(encryptedData, Array.Empty<byte>()));
+        }
+
+        [Fact]
+        public void Encrypt_Synchronous_EmptyPassword_ThrowsArgumentException()
+        {
+            byte[] plaintext = File.ReadAllBytes(SampleDatabasePath);
+            Assert.Throws<ArgumentException>(() => _encryptor.Encrypt(plaintext, Array.Empty<byte>()));
+        }
+
+        [Fact]
+        public void Encrypt_Synchronous_NullPlaintext_ThrowsArgumentException()
+        {
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(SamplePassword);
+            Assert.Throws<ArgumentException>(() => _encryptor.Encrypt(null!, passwordBytes));
+        }
+
+        [Fact]
         public async Task Decrypt_Asynchronous_InvalidPassword_ThrowsException()
         {
             //Arrange
@@ -78,14 +102,56 @@ namespace SQLCipherSharp3.Tests
         public void Decrypt_Synchronous_NullData_ThrowsArgumentException()
         {
             byte[] passwordBytes = Encoding.UTF8.GetBytes(SamplePassword);
-            Assert.Throws<ArgumentException>(() => _decryptor.Decrypt(null, passwordBytes));
+            Assert.Throws<ArgumentException>(() => _decryptor.Decrypt(null!, passwordBytes));
         }
 
         [Fact]
         public async Task Decrypt_Asynchronous_NullData_ThrowsArgumentException()
         {
             byte[] passwordBytes = Encoding.UTF8.GetBytes(SamplePassword);
-            await Assert.ThrowsAsync<ArgumentException>(async () => await _decryptor.DecryptAsync(null, passwordBytes));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await _decryptor.DecryptAsync(null!, passwordBytes));
+        }
+
+        [Fact]
+        public void Encrypt_Decrypt_RoundTrip_ReturnsOriginalDatabase()
+        {
+            byte[] plaintext = File.ReadAllBytes(SampleDatabasePath);
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(SamplePassword);
+
+            byte[] encrypted = _encryptor.Encrypt(plaintext, passwordBytes);
+            byte[] decrypted = _decryptor.Decrypt(encrypted, passwordBytes);
+
+            AssertDecryptedDatabasesEqual(plaintext, decrypted);
+        }
+
+        [Fact]
+        public async Task Encrypt_Decrypt_Asynchronous_RoundTrip_ReturnsOriginalDatabase()
+        {
+            byte[] plaintext = await File.ReadAllBytesAsync(SampleDatabasePath);
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(SamplePassword);
+
+            byte[] encrypted = await _encryptor.EncryptAsync(plaintext, passwordBytes);
+            byte[] decrypted = await _decryptor.DecryptAsync(encrypted, passwordBytes);
+
+            AssertDecryptedDatabasesEqual(plaintext, decrypted);
+        }
+
+        [Fact]
+        public void Decrypt_Synchronous_TamperedSecondPage_ThrowsWrongPasswordException()
+        {
+            byte[] tampered = File.ReadAllBytes(SampleEncDatabasePath);
+            var config = new SqlCipherConfiguration();
+            int pageSize = config.PageSize;
+            int reserveSize = config.ReserveSize;
+
+            Assert.True(tampered.Length >= pageSize * 2, "Test database should be at least two pages.");
+
+            int page2ReserveOffset = pageSize + (pageSize - reserveSize);
+            tampered[page2ReserveOffset + config.IvSize] ^= 0xFF;
+
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(SamplePassword);
+            var ex = Assert.Throws<WrongPasswordException>(() => _decryptor.Decrypt(tampered, passwordBytes));
+            Assert.Contains("HMAC verification failed", ex.Message);
         }
 
         /// <summary>
